@@ -1,0 +1,20 @@
+Package: poser
+Type: Package
+Title: poser: Phylogenetic Outbreak Size Estimation in R
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Rowan", "Durrant",
+      email = "durrar1@mcmaster.ca",
+      role = c("aut", "cre")
+    )
+  )
+Description: Simple outbreak size estimation method for rabies outbreaks.
+    Uses only a maximum-likelihood phylogenetic tree and an estimate of the per-
+      generation substitution rate.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.3
+Imports:
+    glmmTMB

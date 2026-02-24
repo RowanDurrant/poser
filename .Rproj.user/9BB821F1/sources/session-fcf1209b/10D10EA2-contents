@@ -1,0 +1,89 @@
+library(glmmTMB)
+library(splines)
+library(distionary)
+library(distplyr)
+
+estimate_Size = function(tree, MR, accuracy_data){
+  if(length(MR) == 1){
+    treelength = sum(tree$edge.length)
+    tips = length(tree$tip.label)
+    f = function(p, m = MR, 
+                 S = tips, TL = treelength){
+      TL*sqrt(p) - m*(S-p)
+    }
+    prop_ests = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
+    print(prop_ests)
+    
+    #bring in uncertainty from method itself
+    gtfit <- glmmTMB((1/accuracy_ratio_uniroot)~bs(estimate_seqd_meanbranch_uniroot, 4)
+                     , dispformula = ~bs(estimate_seqd_meanbranch_uniroot, 4)
+                     , data = accuracy_data
+    )
+    
+    df = data.frame(estimate_seqd_meanbranch_uniroot = prop_ests)
+    df$error_sd = predict(gtfit, df, type = "disp")
+    df$error_mean = predict(gtfit, df)
+    
+    ci_2.5_50_97.5 = qnorm(c(0.025, 0.5, 0.975), mean = df$error_mean, sd = df$error_sd)
+    p_2.5_50_97.5 = df$estimate_seqd_meanbranch_uniroot*ci_2.5_50_97.5
+    N_2.5_50_97.5 = tips/p_2.5_50_97.5
+    
+    df$treelength = treelength
+    
+    df$mean_estimate_p = p_2.5_50_97.5[2]
+    df$lower_estimate_p = p_2.5_50_97.5[1]
+    df$upper_estimate_p = p_2.5_50_97.5[3]
+    
+    df$mean_estimate_N = N_2.5_50_97.5[2]
+    df$lower_estimate_N = N_2.5_50_97.5[3]
+    df$upper_estimate_N = N_2.5_50_97.5[1]
+    
+    colnames(df)[1] = "raw_estimate_p"
+    return(df)
+  }
+  else{
+    treelength = sum(tree$edge.length)
+    tips = length(tree$tip.label)
+    gtfit <- glmmTMB((1/accuracy_ratio_uniroot)~bs(estimate_seqd_meanbranch_uniroot, 4)
+                     , dispformula = ~bs(estimate_seqd_meanbranch_uniroot, 4)
+                     , data = accuracy_data
+    )
+    
+    prop_ests = c()
+    for(i in 1:length(MR)){
+      f = function(p, m = MR[i], 
+                   S = tips, TL = treelength){
+        TL*sqrt(p) - m*(S-p)
+      }
+      prop_ests[i] = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
+    }
+
+    df = data.frame(estimate_seqd_meanbranch_uniroot = prop_ests)
+    df$error_sd = predict(gtfit, df, type = "disp")
+    df$error_mean = predict(gtfit, df)
+    
+    distr_list = list()
+    for(j in 1:nrow(df)){
+      #not sure if this is the correct way to do this
+      distr_list[[j]] = df$estimate_seqd_meanbranch_uniroot[j]*dst_norm(mean = df$error_mean[j], 
+                                 sd = df$error_sd[j])
+    }
+    combined_dists = mix(distr_list)
+    
+    p_2.5_50_97.5 = eval_quantile(combined_dists, c(0.025, 0.5, 0.975))
+    N_2.5_50_97.5 = tips/p_2.5_50_97.5
+    
+    df2 = data.frame(tree_length = treelength,
+                    mean_estimate_p = p_2.5_50_97.5[2],
+                    lower_estimate_p = p_2.5_50_97.5[1],
+                    upper_estimate_p = p_2.5_50_97.5[3],
+                    mean_estimate_N = N_2.5_50_97.5[2],
+                    lower_estimate_N = N_2.5_50_97.5[3],
+                    upper_estimate_N = N_2.5_50_97.5[1])
+    
+  #would be nice to get a distribution plot of N values here
+    #but not entirely sure how to do that without sampling from p distribution
+    
+    return(df2)
+  }
+}
