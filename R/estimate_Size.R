@@ -1,3 +1,18 @@
+#' Estimate the size of an outbreak from a phylogenetic tree.
+#'
+#' @param tree A nucleotide-scaled phylogenetic tree as an object of class "phylo".
+#' @param MR A numeric value for the per-generation substitution rate,
+#'  with the units substitutions per site per generation.
+#' @returns A named vector. 'tree length' is the sum of the branch lengths of your tree;
+#'  'mean_estimate_p' is the estimate for the proportion of cases sequenced, adjusted
+#'  using our simulated accuracy data; 'mean_estimate_N' is the estimate of the outbreak
+#'  size calculated from this proportion; 'upper' and 'lower' values give 95\% credible intervals.
+#' @examples
+#'   require(ape)
+#'   tree = poser::example_tree
+#'   per_gen = 0.0002 * (28/365)
+#'   estimate_Size(tree, per_gen)
+#'
 #' @export estimate_Size
 
 estimate_Size = function(tree, MR){
