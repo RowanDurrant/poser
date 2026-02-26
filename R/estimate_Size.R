@@ -1,6 +1,6 @@
 #' @export estimate_Size
 
-estimate_Size = function(tree, MR, accuracy_data){
+estimate_Size = function(tree, MR){
   if(length(MR) == 1){
     treelength = sum(tree$edge.length)
     tips = length(tree$tip.label)
@@ -12,17 +12,17 @@ estimate_Size = function(tree, MR, accuracy_data){
     print(prop_ests)
 
     #bring in uncertainty from method itself
-    gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio_uniroot)~splines::bs(estimate_seqd_meanbranch_uniroot, 4)
-                     , dispformula = ~splines::bs(estimate_seqd_meanbranch_uniroot, 4)
+    gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio)~splines::bs(estimate_seqd, 4)
+                     , dispformula = ~splines::bs(estimate_seqd, 4)
                      , data = accuracy_data
     )
 
-    df = data.frame(estimate_seqd_meanbranch_uniroot = prop_ests)
+    df = data.frame(estimate_seqd = prop_ests)
     df$error_sd = predict(gtfit, df, type = "disp")
     df$error_mean = predict(gtfit, df)
 
     ci_2.5_50_97.5 = qnorm(c(0.025, 0.5, 0.975), mean = df$error_mean, sd = df$error_sd)
-    p_2.5_50_97.5 = df$estimate_seqd_meanbranch_uniroot*ci_2.5_50_97.5
+    p_2.5_50_97.5 = df$estimate_seqd*ci_2.5_50_97.5
     N_2.5_50_97.5 = tips/p_2.5_50_97.5
 
     df2 = c(tree_length = treelength,
@@ -38,8 +38,8 @@ estimate_Size = function(tree, MR, accuracy_data){
   else{
     treelength = sum(tree$edge.length)
     tips = length(tree$tip.label)
-    gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio_uniroot)~splines::bs(estimate_seqd_meanbranch_uniroot, 4)
-                     , dispformula = ~splines::bs(estimate_seqd_meanbranch_uniroot, 4)
+    gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio)~splines::bs(estimate_seqd, 4)
+                     , dispformula = ~splines::bs(estimate_seqd, 4)
                      , data = accuracy_data
     )
 
@@ -52,13 +52,13 @@ estimate_Size = function(tree, MR, accuracy_data){
       prop_ests[i] = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
     }
 
-    df = data.frame(estimate_seqd_meanbranch_uniroot = prop_ests)
+    df = data.frame(estimate_seqd = prop_ests)
     df$error_sd = predict(gtfit, df, type = "disp")
     df$error_mean = predict(gtfit, df)
 
     combined_dists = c()
     for(j in 1:nrow(df)){
-      combined_dists[j] = df$estimate_seqd_meanbranch_uniroot[j]*rnorm(1, mean = df$error_mean[j],
+      combined_dists[j] = df$estimate_seqd[j]*rnorm(1, mean = df$error_mean[j],
                                                                         sd = df$error_sd[j])
     }
 
