@@ -12,8 +12,8 @@ estimate_Size = function(tree, MR, accuracy_data){
     print(prop_ests)
 
     #bring in uncertainty from method itself
-    gtfit <- glmmTBM::glmmTMB((1/accuracy_ratio_uniroot)~bs(estimate_seqd_meanbranch_uniroot, 4)
-                     , dispformula = ~bs(estimate_seqd_meanbranch_uniroot, 4)
+    gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio_uniroot)~splines::bs(estimate_seqd_meanbranch_uniroot, 4)
+                     , dispformula = ~splines::bs(estimate_seqd_meanbranch_uniroot, 4)
                      , data = accuracy_data
     )
 
@@ -38,8 +38,8 @@ estimate_Size = function(tree, MR, accuracy_data){
   else{
     treelength = sum(tree$edge.length)
     tips = length(tree$tip.label)
-    gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio_uniroot)~bs(estimate_seqd_meanbranch_uniroot, 4)
-                     , dispformula = ~bs(estimate_seqd_meanbranch_uniroot, 4)
+    gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio_uniroot)~splines::bs(estimate_seqd_meanbranch_uniroot, 4)
+                     , dispformula = ~splines::bs(estimate_seqd_meanbranch_uniroot, 4)
                      , data = accuracy_data
     )
 
