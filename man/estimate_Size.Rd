@@ -11,7 +11,7 @@ estimate_Size(tree, MR)
 
 \item{MR}{A numeric value for the per-generation substitution rate,
 with the units substitutions per site per generation, OR a vector of per-generation
-substitution rate estimates (i.e., substitution rate estimates from a BEAST log
+substitution rate estimates (i.e., substitution rate posterior estimates from a BEAST log
 file multiplied by the generation interval)}
 }
 \value{

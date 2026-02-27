@@ -52,6 +52,10 @@ estimate_Size = function(tree, MR){
     return(df2)
   }
   else{
+    if(length(MR) <= 500){
+      warning("The supplied substitution rate is a short vector;
+              is this correct?")
+    }
     treelength = sum(tree$edge.length)
     tips = length(tree$tip.label)
     gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio)~splines::bs(estimate_seqd, 4)
