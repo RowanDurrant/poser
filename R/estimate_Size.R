@@ -2,7 +2,9 @@
 #'
 #' @param tree A nucleotide-scaled phylogenetic tree as an object of class "phylo".
 #' @param MR A numeric value for the per-generation substitution rate,
-#'  with the units substitutions per site per generation.
+#'  with the units substitutions per site per generation, OR a vector of per-generation
+#'  substitution rate estimates (i.e., substitution rate posterior estimates from a BEAST log
+#'  file multiplied by the generation interval)
 #' @returns A named vector. 'tree length' is the sum of the branch lengths of your tree;
 #'  'mean_estimate_p' is the estimate for the proportion of cases sequenced, adjusted
 #'  using our simulated accuracy data; 'mean_estimate_N' is the estimate of the outbreak
@@ -24,7 +26,6 @@ estimate_Size = function(tree, MR){
       TL*sqrt(p) - m*(S-p)
     }
     prop_ests = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
-    print(prop_ests)
 
     #bring in uncertainty from method itself
     gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio)~splines::bs(estimate_seqd, 4)

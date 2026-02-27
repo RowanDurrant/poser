@@ -10,7 +10,9 @@ estimate_Size(tree, MR)
 \item{tree}{A nucleotide-scaled phylogenetic tree as an object of class "phylo".}
 
 \item{MR}{A numeric value for the per-generation substitution rate,
-with the units substitutions per site per generation.}
+with the units substitutions per site per generation, OR a vector of per-generation
+substitution rate estimates (i.e., substitution rate estimates from a BEAST log
+file multiplied by the generation interval)}
 }
 \value{
 A named vector. 'tree length' is the sum of the branch lengths of your tree;
