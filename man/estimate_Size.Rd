@@ -4,7 +4,7 @@
 \alias{estimate_Size}
 \title{Estimate the size of an outbreak from a phylogenetic tree.}
 \usage{
-estimate_Size(tree, MR)
+estimate_Size(tree, MR, adjusted = T)
 }
 \arguments{
 \item{tree}{A nucleotide-scaled phylogenetic tree as an object of class "phylo".}
@@ -13,6 +13,11 @@ estimate_Size(tree, MR)
 with the units substitutions per site per generation, OR a vector of per-generation
 substitution rate estimates (i.e., substitution rate posterior estimates from a BEAST log
 file multiplied by the generation interval)}
+
+\item{adjusted}{Boolean. True by default, use False if you do not want your estimates
+to be adjusted based on simulated accuracy data. WARNING: This may make your estimate
+less accurate! If you turn off adjustments and use only a point value of the substitution
+rate, you will receive a point value estimate of p and N without credible intervals.}
 }
 \value{
 A named vector. 'tree length' is the sum of the branch lengths of your tree;
