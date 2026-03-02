@@ -1,3 +1,5 @@
+TO DO: think of new acronym, this one is taken :(((
+
 # PROSE: Phylogenetic Rabies Outbreak Size Estimation
 A simple method of estimating rabies outbreak sizes from phylogenetic trees in R. 
 
