@@ -30,11 +30,8 @@ estimate_Size = function(tree, MR, adjusted = T){
     if(length(MR) == 1){
       treelength = sum(tree$edge.length)
       tips = length(tree$tip.label)
-      f = function(p, m = MR,
-                   S = tips, TL = treelength){
-        TL*sqrt(p) - m*(S-p)
-      }
-      prop_ests = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
+
+      prop_ests = poser::est_p(MR, treelength, tips)
 
       #bring in uncertainty from method itself
       gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio)~splines::bs(estimate_seqd, 4)
@@ -75,11 +72,7 @@ estimate_Size = function(tree, MR, adjusted = T){
 
       prop_ests = c()
       for(i in 1:length(MR)){
-        f = function(p, m = MR[i],
-                     S = tips, TL = treelength){
-          TL*sqrt(p) - m*(S-p)
-        }
-        prop_ests[i] = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
+        prop_ests[i] = poser::est_p(MR[i], treelength, tips)
       }
 
       df = data.frame(estimate_seqd = prop_ests)
@@ -110,11 +103,8 @@ estimate_Size = function(tree, MR, adjusted = T){
     if(length(MR) == 1){
       treelength = sum(tree$edge.length)
       tips = length(tree$tip.label)
-      f = function(p, m = MR,
-                   S = tips, TL = treelength){
-        TL*sqrt(p) - m*(S-p)
-      }
-      prop_ests = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
+
+      prop_ests = poser::est_p(MR, treelength, tips)
 
       size_est = tips/prop_ests
 
@@ -134,11 +124,7 @@ estimate_Size = function(tree, MR, adjusted = T){
 
       prop_ests = c()
       for(i in 1:length(MR)){
-        f = function(p, m = MR[i],
-                     S = tips, TL = treelength){
-          TL*sqrt(p) - m*(S-p)
-        }
-        prop_ests[i] = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
+        prop_ests[i] = poser::est_p(MR[i], treelength, tips)
       }
 
       p_2.5_50_97.5 = quantile(prop_ests, c(0.025, 0.5, 0.975))
