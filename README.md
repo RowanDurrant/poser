@@ -1,4 +1,4 @@
-# PROSE: Phylogenetic Rabies Outbreak Size Estimation
+# POSER: Phylogenetic Outbreak Size Estimation in R
 A simple method of estimating rabies outbreak sizes from phylogenetic trees in R. 
 
 ## Usage
