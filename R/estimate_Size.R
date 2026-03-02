@@ -16,9 +16,12 @@
 #'  size calculated from this proportion; 'upper' and 'lower' values give 95\% credible intervals.
 #' @examples
 #'   require(ape)
-#'   tree = poser::example_tree
-#'   per_gen = 0.0002 * (28/365)
+#'   tree = prose::example_tree
+#'   per_gen = 0.0002 * (28/365) #0.0002 subs/site/year, 28 day generation interval
 #'   estimate_Size(tree, per_gen)
+#'   #output:
+#'   #tree_length  mean_estimate_p lower_estimate_p upper_estimate_p  mean_estimate_N lower_estimate_N upper_estimate_N
+#'   #9.730849e-03     8.807112e-03     3.006062e-03     1.460816e-02     6.699132e+03     4.038838e+03  1.962701e+04
 #'
 #' @export estimate_Size
 
