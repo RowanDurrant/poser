@@ -41,4 +41,4 @@ Where 'tree length' is the sum of branch lengths of your input tree, 'mean_estim
 
 ## Troubleshooting
 
-Sometimes you might get an estimated value of p above 1. This is usually caused either by the input substitution rate estimate being too high, or the outbreak being very small with most of the cases being sequenced, leading to lots of identical sequences in the dataset. In this case, the sequences/tree should be inspected, the possibility of a small outbreak or extreme sampling bias should be considered, and the substitution rate used should be scrutinised.
+Sometimes you might get an estimated value of p considerably higher than 1. This is usually caused either by the input substitution rate estimate being too high, or by the outbreak being very small with most of the cases being sequenced, leading to lots of identical sequences in the dataset. In this case, the sequences/tree should be inspected to consider the possibility of a small outbreak or extreme sampling bias, and the substitution rate used should be scrutinised.
