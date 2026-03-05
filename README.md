@@ -8,7 +8,7 @@ To install the package:
 devtools::install_github("RowanDurrant/poser")
 ```
 
-Load a phylogenetic tree of sequences from an outbreak, and specify a per-generation substitution rate estimate for this outbreak:
+Load a phylogenetic tree of sequences from an outbreak (substitution-scaled, not a time-scaled tree), and specify a per-generation substitution rate estimate for this outbreak:
 
 ```
 library(ape)
