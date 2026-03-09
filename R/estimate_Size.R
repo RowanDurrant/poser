@@ -88,7 +88,7 @@ estimate_Size = function(tree, MR, adjusted = T){
       p_2.5_50_97.5 = quantile(combined_dists, c(0.025, 0.5, 0.975))
       N_2.5_50_97.5 = tips/p_2.5_50_97.5
 
-      df2 = data.frame(tree_length = treelength,
+      df2 = c(tree_length = treelength,
                        mean_estimate_p = unname(p_2.5_50_97.5[2]),
                        lower_estimate_p = unname(p_2.5_50_97.5[1]),
                        upper_estimate_p = unname(p_2.5_50_97.5[3]),
@@ -130,7 +130,7 @@ estimate_Size = function(tree, MR, adjusted = T){
       p_2.5_50_97.5 = quantile(prop_ests, c(0.025, 0.5, 0.975))
       N_2.5_50_97.5 = tips/p_2.5_50_97.5
 
-      df2 = data.frame(tree_length = treelength,
+      df2 = c(tree_length = treelength,
                        mean_estimate_p = unname(p_2.5_50_97.5[2]),
                        lower_estimate_p = unname(p_2.5_50_97.5[1]),
                        upper_estimate_p = unname(p_2.5_50_97.5[3]),
