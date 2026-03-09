@@ -28,10 +28,7 @@ Where 'tree length' is the sum of branch lengths of your input tree, 'mean_estim
 Alternatively, you can use a BEAST log file for your substitution rate and the uncertainty will be built into the credible intervals:
 
 ```
-library(data.table)
-BEAST_log = fread("rabies_outbreak_logfile.log.txt", 
-                        select = "meanRate")$meanRate
-BEAST_log_trimmed = BEAST_log[round(length(BEAST_log)*0.1):length(BEAST_log)] #remove burn-in
+BEAST_log_trimmed = poser::mock_BEAST_clockrates #when using your own log file, remember to remove the burn-in
 subrate = BEAST_log_trimmed * (28/365)
 
 estimate_Size(tree, subrate)
