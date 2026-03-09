@@ -20,7 +20,7 @@ estimate_Size(tree, subrate)
 Output:
 ```
 tree_length  mean_estimate_p lower_estimate_p upper_estimate_p  mean_estimate_N lower_estimate_N upper_estimate_N 
-9.730849e-03     8.806110e-03     3.005633e-03     1.460659e-02     6.699894e+03     4.039274e+03     1.962981e+04 
+0.009730849      0.008806110      0.003005633      0.014606587   6699.893777499   4039.273569111  19629.810235339 
 
 ```
 Where 'tree length' is the sum of branch lengths of your input tree, 'mean_estimate_p' is the mean estimate for the proportion of cases sequenced, 'mean_estimate_N' is the outbreak size estimate calculated using the mean value of p, and the 'upper' and 'lower' values are the 95% credible interval values.
@@ -31,6 +31,12 @@ Alternatively, you can use a BEAST log file for your substitution rate and the u
 subrate = poser::mock_BEAST_clockrates * (28/365) #when using your own log file, remember to remove the burn-in
 
 estimate_Size(tree, subrate)
+```
+
+Output:
+```
+tree_length  mean_estimate_p lower_estimate_p upper_estimate_p  mean_estimate_N lower_estimate_N upper_estimate_N 
+0.009730849      0.008709834      0.002859246      0.015996358   6773.952578074   3688.339597756  20634.808750980
 ```
 
 ## Troubleshooting
