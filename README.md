@@ -11,8 +11,7 @@ devtools::install_github("RowanDurrant/poser")
 Load a phylogenetic tree of sequences from an outbreak (substitution-scaled, not a time-scaled tree), and specify a per-generation substitution rate estimate for this outbreak:
 
 ```
-library(ape)
-tree = read.tree("rabies_outbreak.treefile")
+tree = poser::example_tree #maximum likelihood tree- must be an object of class "phylo"
 subrate = 0.0002 * (28/365) #TempEst, BEAST or literature estimate multiplied by generation interval in years
 
 estimate_Size(tree, subrate)
