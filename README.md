@@ -28,8 +28,7 @@ Where 'tree length' is the sum of branch lengths of your input tree, 'mean_estim
 Alternatively, you can use a BEAST log file for your substitution rate and the uncertainty will be built into the credible intervals:
 
 ```
-BEAST_log_trimmed = poser::mock_BEAST_clockrates #when using your own log file, remember to remove the burn-in
-subrate = BEAST_log_trimmed * (28/365)
+subrate = poser::mock_BEAST_clockrates * (28/365) #when using your own log file, remember to remove the burn-in
 
 estimate_Size(tree, subrate)
 ```
