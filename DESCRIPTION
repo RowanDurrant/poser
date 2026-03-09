@@ -1,6 +1,6 @@
 Package: poser
 Type: Package
-Title: poser: Phylogenetic Rabies Outbreak Size Estimation
+Title: Phylogenetic Outbreak Size Estimation in R
 Version: 0.1.0
 Authors@R: c(
     person(

@@ -4,10 +4,15 @@
 \name{poser-package}
 \alias{poser}
 \alias{poser-package}
-\title{poser: poser: Phylogenetic Rabies Outbreak Size Estimation}
+\title{poser: Phylogenetic Outbreak Size Estimation in R}
 \description{
 Simple outbreak size estimation method for rabies outbreaks. Uses only a maximum-likelihood phylogenetic tree and an estimate of the per- generation substitution rate.
 }
+\section{Functions}{
+
+estimate_Size() is used to estimate the size of an outbreak.
+}
+
 \author{
 \strong{Maintainer}: Rowan Durrant \email{durrar1@mcmaster.ca}
 
