@@ -20,7 +20,7 @@ estimate_Size(tree, subrate)
 Output:
 ```
 tree_length  mean_estimate_p lower_estimate_p upper_estimate_p  mean_estimate_N lower_estimate_N upper_estimate_N 
-0.009730849      0.008806110      0.003005633      0.014606587   6699.893777499   4039.273569111  19629.810235339 
+0.009730849      0.009200249      0.002316431      0.036540946   6412.869606511   1614.627053190  25470.214009399
 
 ```
 Where 'tree length' is the sum of branch lengths of your input tree, 'mean_estimate_p' is the mean estimate for the proportion of cases sequenced, 'mean_estimate_N' is the outbreak size estimate calculated using the mean value of p, and the 'upper' and 'lower' values are the 95% credible interval values.
@@ -36,7 +36,7 @@ estimate_Size(tree, subrate)
 Output:
 ```
 tree_length  mean_estimate_p lower_estimate_p upper_estimate_p  mean_estimate_N lower_estimate_N upper_estimate_N 
-0.009730849      0.008709834      0.002859246      0.015996358   6773.952578074   3688.339597756  20634.808750980
+0.009730849      0.009052342      0.002179221      0.037889803   6517.650160933   1557.147186719  27073.892440975
 ```
 
 ## Troubleshooting
