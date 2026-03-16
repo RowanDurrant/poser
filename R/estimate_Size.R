@@ -34,27 +34,27 @@ estimate_Size = function(tree, MR, adjusted = T){
       prop_ests = poser::est_p(MR, treelength, tips)
 
       #bring in uncertainty from method itself
-      gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio)~splines::bs(estimate_seqd, 4)
-                                , dispformula = ~splines::bs(estimate_seqd, 4)
+      gtfit <- glmmTMB::glmmTMB(accuracy_p~splines::bs(estimate_p, 4)
+                                , dispformula = ~splines::bs(estimate_p, 4)
                                 , data = accuracy_data
       )
 
-      df = data.frame(estimate_seqd = prop_ests)
+      df = data.frame(estimate_p = prop_ests)
       df$error_sd = predict(gtfit, df, type = "disp")
       df$error_mean = predict(gtfit, df)
 
-      ci_2.5_50_97.5 = qnorm(c(0.025, 0.5, 0.975), mean = df$error_mean,
-                             sd = df$error_sd)
-      p_2.5_50_97.5 = df$estimate_seqd*ci_2.5_50_97.5
+      ci_2.5_50_97.5 = exp(qnorm(c(0.025, 0.5, 0.975), mean = df$error_mean,
+                             sd = df$error_sd))
+      p_2.5_50_97.5 = df$estimate_p*(1/ci_2.5_50_97.5)
       N_2.5_50_97.5 = tips/p_2.5_50_97.5
 
       df2 = c(tree_length = treelength,
               mean_estimate_p = unname(p_2.5_50_97.5[2]),
-              lower_estimate_p = unname(p_2.5_50_97.5[1]),
-              upper_estimate_p = unname(p_2.5_50_97.5[3]),
+              lower_estimate_p = unname(p_2.5_50_97.5[3]),
+              upper_estimate_p = unname(p_2.5_50_97.5[1]),
               mean_estimate_N = unname(N_2.5_50_97.5[2]),
-              lower_estimate_N = unname(N_2.5_50_97.5[3]),
-              upper_estimate_N = unname(N_2.5_50_97.5[1]))
+              lower_estimate_N = unname(N_2.5_50_97.5[1]),
+              upper_estimate_N = unname(N_2.5_50_97.5[3]))
 
       return(df2)
     }
@@ -65,8 +65,8 @@ estimate_Size = function(tree, MR, adjusted = T){
       }
       treelength = sum(tree$edge.length)
       tips = length(tree$tip.label)
-      gtfit <- glmmTMB::glmmTMB((1/accuracy_ratio)~splines::bs(estimate_seqd, 4)
-                                , dispformula = ~splines::bs(estimate_seqd, 4)
+      gtfit <- glmmTMB::glmmTMB(accuracy_p~splines::bs(estimate_p, 4)
+                                , dispformula = ~splines::bs(estimate_p, 4)
                                 , data = accuracy_data
       )
 
@@ -75,14 +75,14 @@ estimate_Size = function(tree, MR, adjusted = T){
         prop_ests[i] = poser::est_p(MR[i], treelength, tips)
       }
 
-      df = data.frame(estimate_seqd = prop_ests)
+      df = data.frame(estimate_p = prop_ests)
       df$error_sd = predict(gtfit, df, type = "disp")
       df$error_mean = predict(gtfit, df)
 
       combined_dists = c()
       for(j in 1:nrow(df)){
-        combined_dists[j] = df$estimate_seqd[j]*rnorm(1, mean = df$error_mean[j],
-                                                      sd = df$error_sd[j])
+        combined_dists[j] = df$estimate_p[j]*(1/exp(rnorm(1, mean = df$error_mean[j],
+                                                          sd = df$error_sd[j])))
       }
 
       p_2.5_50_97.5 = quantile(combined_dists, c(0.025, 0.5, 0.975))
