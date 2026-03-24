@@ -1,0 +1,178 @@
+#' Estimate the size of an outbreak from a phylogenetic tree.
+#'
+#' @param tree A nucleotide-scaled phylogenetic tree as an object of class "phylo".
+#' @param MR A numeric value for the per-generation substitution rate,
+#'  with the units substitutions per site per generation, OR a vector of per-generation
+#'  substitution rate estimates (i.e., substitution rate posterior estimates from a BEAST log
+#'  file multiplied by the generation interval)
+#' @param z Proportion of cases with no descendents. 0.5 works well for rabies.
+#' @param adjusted Boolean. True by default, use False if you do not want your estimates
+#'  to be adjusted based on simulated accuracy data. WARNING: This may make your estimate
+#'  less accurate! If you turn off adjustments and use only a point value of the substitution
+#'  rate, you will receive a point value estimate of p and N without credible intervals.
+#'
+#' @returns A named vector. 'tree length' is the sum of the branch lengths of your tree;
+#'  'mean_estimate_p' is the estimate for the proportion of cases sequenced, adjusted
+#'  using our simulated accuracy data; 'mean_estimate_N' is the estimate of the outbreak
+#'  size calculated from this proportion; 'upper' and 'lower' values give 95\% credible intervals.
+#' @examples
+#'   require(ape)
+#'   tree = poser::example_tree
+#'   per_gen = 0.0002 * (28/365) #0.0002 subs/site/year, 28 day generation interval
+#'   estimate_Size(tree, per_gen)
+#'   #output:
+#'   #tree_length  mean_estimate_p lower_estimate_p upper_estimate_p  mean_estimate_N lower_estimate_N upper_estimate_N 
+#'   #9.730849e-03     8.806110e-03     3.005633e-03     1.460659e-02     6.699894e+03     4.039274e+03     1.962981e+04 
+#'
+#' @export estimate_Size
+
+estimate_Size_z = function(tree, MR, z=0.5, adjusted = T){
+  if(z > 1 | z < 0){
+    warning("z should be between 0 and 1!")
+  }
+  
+  if(adjusted == T){
+    if(length(MR) == 1){
+      treelength = sum(tree$edge.length)
+      tips = length(tree$tip.label)
+      
+      f = function(p, m = MR, Z = z, 
+                   S = tips, TL = treelength){
+        TL*(p^(1-Z)) - m*(S-p)
+      }
+      
+      if(z == 0.5){
+        prop_ests = poser::est_p(MR, treelength, tips)
+      }
+      else{
+        prop_ests = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
+      }
+      
+      #bring in uncertainty from method itself
+      gtfit <- glmmTMB::glmmTMB(accuracy_p~splines::bs(estimate_p, 4)
+                                , dispformula = ~splines::bs(estimate_p, 4)
+                                , data = accuracy_data
+      )
+      
+      df = data.frame(estimate_p = prop_ests)
+      df$error_sd = predict(gtfit, df, type = "disp")
+      df$error_mean = predict(gtfit, df)
+      
+      ci_2.5_50_97.5 = exp(qnorm(c(0.025, 0.5, 0.975), mean = df$error_mean,
+                                 sd = df$error_sd))
+      p_2.5_50_97.5 = df$estimate_p*(1/ci_2.5_50_97.5)
+      N_2.5_50_97.5 = tips/p_2.5_50_97.5
+      
+      df2 = c(tree_length = treelength,
+              mean_estimate_p = unname(p_2.5_50_97.5[2]),
+              lower_estimate_p = unname(p_2.5_50_97.5[3]),
+              upper_estimate_p = unname(p_2.5_50_97.5[1]),
+              mean_estimate_N = unname(N_2.5_50_97.5[2]),
+              lower_estimate_N = unname(N_2.5_50_97.5[1]),
+              upper_estimate_N = unname(N_2.5_50_97.5[3]))
+      
+      return(df2)
+    }
+    else{
+      if(length(MR) <= 500){
+        warning("The supplied substitution rate is a short vector;
+              is this correct?")
+      }
+      treelength = sum(tree$edge.length)
+      tips = length(tree$tip.label)
+      gtfit <- glmmTMB::glmmTMB(accuracy_p~splines::bs(estimate_p, 4)
+                                , dispformula = ~splines::bs(estimate_p, 4)
+                                , data = accuracy_data
+      )
+      
+      prop_ests = c()
+      if(z == 0.5){
+        for(i in 1:length(MR)){
+          prop_ests[i] = poser::est_p(MR, treelength, tips)
+        }
+      }
+      else{
+        for(i in 1:length(MR)){
+          prop_ests[i] = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
+        }
+      }
+      
+      df = data.frame(estimate_p = prop_ests)
+      df$error_sd = predict(gtfit, df, type = "disp")
+      df$error_mean = predict(gtfit, df)
+      
+      combined_dists = c()
+      for(j in 1:nrow(df)){
+        combined_dists[j] = df$estimate_p[j]*(1/exp(rnorm(1, mean = df$error_mean[j],
+                                                          sd = df$error_sd[j])))
+      }
+      
+      p_2.5_50_97.5 = quantile(combined_dists, c(0.025, 0.5, 0.975))
+      N_2.5_50_97.5 = tips/p_2.5_50_97.5
+      
+      df2 = c(tree_length = treelength,
+              mean_estimate_p = unname(p_2.5_50_97.5[2]),
+              lower_estimate_p = unname(p_2.5_50_97.5[1]),
+              upper_estimate_p = unname(p_2.5_50_97.5[3]),
+              mean_estimate_N = unname(N_2.5_50_97.5[2]),
+              lower_estimate_N = unname(N_2.5_50_97.5[3]),
+              upper_estimate_N = unname(N_2.5_50_97.5[1]))
+      
+      return(df2)
+    }
+  }
+  else{
+    if(length(MR) == 1){
+      treelength = sum(tree$edge.length)
+      tips = length(tree$tip.label)
+      
+      if(z == 0.5){
+        prop_ests = poser::est_p(MR, treelength, tips)
+      }
+      else{
+        prop_ests = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
+      }
+      
+      size_est = tips/prop_ests
+      
+      df2 = c(tree_length = treelength,
+              estimate_p = prop_ests,
+              estimate_N = size_est)
+      
+      return(df2)
+    }
+    else{
+      if(length(MR) <= 500){
+        warning("The supplied substitution rate is a short vector;
+              is this correct?")
+      }
+      treelength = sum(tree$edge.length)
+      tips = length(tree$tip.label)
+      
+      prop_ests = c()
+      if(z == 0.5){
+        for(i in 1:length(MR)){
+          prop_ests[i] = poser::est_p(MR, treelength, tips)
+        }
+      }
+      else{
+        for(i in 1:length(MR)){
+          prop_ests[i] = tryCatch(uniroot(f, c(0,1.5))$root, error=function(err) NA)
+        }
+      }
+      
+      p_2.5_50_97.5 = quantile(prop_ests, c(0.025, 0.5, 0.975))
+      N_2.5_50_97.5 = tips/p_2.5_50_97.5
+      
+      df2 = c(tree_length = treelength,
+              mean_estimate_p = unname(p_2.5_50_97.5[2]),
+              lower_estimate_p = unname(p_2.5_50_97.5[1]),
+              upper_estimate_p = unname(p_2.5_50_97.5[3]),
+              mean_estimate_N = unname(N_2.5_50_97.5[2]),
+              lower_estimate_N = unname(N_2.5_50_97.5[3]),
+              upper_estimate_N = unname(N_2.5_50_97.5[1]))
+      
+      return(df2)
+    }
+  }
+}
